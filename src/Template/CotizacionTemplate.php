@@ -84,6 +84,17 @@ abstract class CotizacionTemplate
         ]);
     }
 
+    protected function notaRecargo(): string
+    {
+        return match ($this->tarifa['nombre']) {
+            'nocturna' => 'Recargo nocturno (+30%)',
+            'lluvia'   => 'Recargo por lluvia (+20%)',
+            'feriado'  => 'Recargo feriado (+50%)',
+            'vip'      => 'Cargo fijo VIP',
+            default    => 'Recargo',
+        };
+    }
+
     abstract protected function calcularRecargos(): float;
     abstract protected function formatearRecibo(): array;
 

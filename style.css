@@ -8,12 +8,13 @@ body {
 }
 
 .app {
-    max-width: 740px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1rem 4rem;
+    padding: 2rem 1.5rem 4rem;
 }
 
-/* Header */
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
 header {
     text-align: center;
     margin-bottom: 2rem;
@@ -31,15 +32,101 @@ header p {
     font-size: .95rem;
 }
 
-/* Form card */
+/* ── Grid principal ──────────────────────────────────────────────────────── */
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Panel izquierdo: historial ──────────────────────────────────────────── */
+
+.panel-historial {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.07);
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+}
+
+.panel-historial h2 {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 1rem;
+}
+
+.historial-lista {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+}
+
+.cotizacion-card {
+    border: 1.5px solid #f0f0f0;
+    border-radius: 10px;
+    padding: .75rem;
+    transition: border-color .15s;
+}
+
+.cotizacion-card:hover { border-color: #c8ddd4; }
+
+.cc-ruta {
+    font-size: .8rem;
+    color: #444;
+    margin-bottom: .45rem;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.cc-detalle {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.cc-km {
+    font-size: .78rem;
+    color: #999;
+    margin-left: auto;
+}
+
+.cc-total {
+    font-size: .9rem;
+    color: #1a1a2e;
+}
+
+/* ── Panel derecho: cotizador ────────────────────────────────────────────── */
+
+.panel-cotizador {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ── Form card ───────────────────────────────────────────────────────────── */
+
 .form-card {
     background: white;
     border-radius: 16px;
-    padding: 1.75rem;
+    padding: 1.5rem;
     box-shadow: 0 2px 16px rgba(0,0,0,.07);
     display: flex;
     flex-direction: column;
-    gap: 1.4rem;
+    gap: 1.1rem;
 }
 
 .field label {
@@ -50,65 +137,91 @@ header p {
     color: #444;
 }
 
-select {
-    width: 100%;
-    padding: .65rem .9rem;
+/* ── Mapa ────────────────────────────────────────────────────────────────── */
+
+#mapa {
+    height: 300px;
+    border-radius: 12px;
+    overflow: hidden;
     border: 1.5px solid #ddd;
-    border-radius: 10px;
-    font-size: .95rem;
-    outline: none;
-    transition: border-color .2s;
-    background: white;
-    cursor: pointer;
 }
 
-select:focus { border-color: #2d6a4f; }
-
-/* Tarifa grid */
-.tarifa-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: .6rem;
+.mapa-icono {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
 }
 
-@media (max-width: 520px) {
-    .tarifa-grid { grid-template-columns: repeat(3, 1fr); }
-}
+/* ── Waypoints ───────────────────────────────────────────────────────────── */
 
-.tarifa-btn {
+.waypoints {
     display: flex;
     flex-direction: column;
+    gap: .4rem;
+}
+
+.waypoint {
+    display: flex;
     align-items: center;
-    gap: .2rem;
-    padding: .75rem .4rem;
-    border: 2px solid #e4e4e4;
-    border-radius: 12px;
+    gap: .6rem;
+    padding: .5rem .75rem;
+    border-radius: 9px;
+    background: #f5f7f6;
+    font-size: .875rem;
+}
+
+.wp-dot     { font-size: 1rem; flex-shrink: 0; line-height: 1; }
+.wp-verde   { color: #2d6a4f; }
+.wp-rojo    { color: #c62828; }
+
+.wp-texto {
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wp-vacio {
+    color: #aaa;
+    font-style: italic;
+}
+
+.btn-ubicacion {
+    margin-left: auto;
+    flex-shrink: 0;
+    padding: .25rem .6rem;
+    border: 1.5px solid #2d6a4f;
+    border-radius: 6px;
     background: white;
+    color: #2d6a4f;
+    font-size: .75rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: border-color .15s, background .15s, transform .1s;
-    text-align: center;
+    white-space: nowrap;
+    transition: background .15s;
 }
 
-.tarifa-btn:hover {
-    border-color: #2d6a4f;
-    transform: translateY(-2px);
+.btn-ubicacion:hover    { background: #eaf4ee; }
+.btn-ubicacion:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Botones acción ──────────────────────────────────────────────────────── */
+
+#btnCalcular {
+    padding: .8rem;
+    background: #1565c0;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
 }
 
-.tarifa-btn.active {
-    border-color: #2d6a4f;
-    background: #eaf4ee;
-}
+#btnCalcular:hover    { background: #0d47a1; }
+#btnCalcular:disabled { background: #90a4ae; cursor: not-allowed; }
 
-.tarifa-vip.active {
-    border-color: #c08a00;
-    background: #fff9e6;
-}
-
-.tarifa-icon  { font-size: 1.35rem; }
-.tarifa-nombre { font-weight: 700; font-size: .78rem; color: #222; }
-.tarifa-desc  { font-size: .65rem; color: #999; line-height: 1.3; }
-
-/* Botón cotizar */
 #btnCotizar {
     padding: .9rem;
     background: #2d6a4f;
@@ -124,38 +237,50 @@ select:focus { border-color: #2d6a4f; }
 #btnCotizar:hover  { background: #1b4332; }
 #btnCotizar:active { transform: scale(.98); }
 
-/* Recibo */
-.recibo {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-top: 1.25rem;
-    box-shadow: 0 2px 16px rgba(0,0,0,.07);
-    animation: slideIn .3s ease;
+/* ── Tarifa grid ─────────────────────────────────────────────────────────── */
+
+.tarifa-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .5rem;
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+@media (max-width: 520px) {
+    .tarifa-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-.recibo-header {
+.tarifa-btn {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 1.1rem;
-    font-weight: 700;
-    font-size: 1rem;
+    gap: .2rem;
+    padding: .65rem .3rem;
+    border: 2px solid #e4e4e4;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+    text-align: center;
 }
 
-/* Badges */
+.tarifa-btn:hover  { border-color: #2d6a4f; transform: translateY(-2px); }
+.tarifa-btn.active { border-color: #2d6a4f; background: #eaf4ee; }
+.tarifa-vip.active { border-color: #c08a00; background: #fff9e6; }
+
+.tarifa-icon   { font-size: 1.2rem; }
+.tarifa-nombre { font-weight: 700; font-size: .75rem; color: #222; }
+.tarifa-desc   { font-size: .62rem; color: #999; line-height: 1.3; }
+
+/* ── Badges ──────────────────────────────────────────────────────────────── */
+
 .badge {
-    padding: .25rem .8rem;
+    padding: .2rem .65rem;
     border-radius: 999px;
-    font-size: .72rem;
+    font-size: .68rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .05em;
+    flex-shrink: 0;
 }
 
 .badge.normal   { background: #eaf4ee; color: #2d6a4f; }
@@ -164,7 +289,31 @@ select:focus { border-color: #2d6a4f; }
 .badge.feriado  { background: #fce4ec; color: #c62828; }
 .badge.vip      { background: #fff9e6; color: #c08a00; }
 
-/* Desglose */
+/* ── Recibo ──────────────────────────────────────────────────────────────── */
+
+.recibo {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.07);
+    animation: slideIn .3s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.recibo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-bottom: 1.1rem;
+    font-weight: 700;
+    font-size: .95rem;
+}
+
 .recibo-detalle { display: flex; flex-direction: column; gap: .65rem; }
 
 .linea {
@@ -180,58 +329,17 @@ select:focus { border-color: #2d6a4f; }
     border-top: 2px solid #eee;
     padding-top: .7rem;
     margin-top: .2rem;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: #1a1a2e;
 }
 
-/* Historial */
-.historial { margin-top: 2.25rem; }
-
-.historial h2 {
-    font-size: .9rem;
-    font-weight: 700;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    margin-bottom: .75rem;
-}
-
-.tabla-wrap {
-    overflow-x: auto;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.06);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    font-size: .85rem;
-    min-width: 480px;
-}
-
-th {
-    background: #2d6a4f;
-    color: white;
-    padding: .65rem .9rem;
-    text-align: left;
-    font-weight: 600;
-    font-size: .8rem;
-}
-
-td {
-    padding: .6rem .9rem;
-    border-bottom: 1px solid #f2f2f2;
-    color: #333;
-}
-
-tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: #f8faf9; }
+/* ── Varios ──────────────────────────────────────────────────────────────── */
 
 .vacio {
     text-align: center;
     color: #aaa;
-    padding: 1.5rem !important;
+    padding: 1.5rem 0;
     font-style: italic;
+    font-size: .875rem;
 }

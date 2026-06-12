@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RideQuote</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,99 +15,103 @@
         <p>Cotizá tu viaje al instante</p>
     </header>
 
-    <main>
-        <section class="form-card">
+    <main class="grid-layout">
 
-            <div class="field">
-                <label for="ruta">Ruta</label>
-                <select id="ruta">
-                    <option value="">Cargando rutas...</option>
-                </select>
-            </div>
+        <!-- ── Columna izquierda: mapa + cotizador ── -->
+        <div class="panel-cotizador">
 
-            <div class="field">
-                <label>Tipo de tarifa</label>
-                <div class="tarifa-grid" id="tarifaGrid">
-                    <button type="button" class="tarifa-btn active" data-tarifa="normal">
-                        <span class="tarifa-icon">🚗</span>
-                        <span class="tarifa-nombre">Normal</span>
-                        <span class="tarifa-desc">Tarifa estándar</span>
-                    </button>
-                    <button type="button" class="tarifa-btn" data-tarifa="nocturna">
-                        <span class="tarifa-icon">🌙</span>
-                        <span class="tarifa-nombre">Nocturna</span>
-                        <span class="tarifa-desc">+30% después de las 22hs</span>
-                    </button>
-                    <button type="button" class="tarifa-btn" data-tarifa="lluvia">
-                        <span class="tarifa-icon">🌧️</span>
-                        <span class="tarifa-nombre">Lluvia</span>
-                        <span class="tarifa-desc">+20% en mal clima</span>
-                    </button>
-                    <button type="button" class="tarifa-btn" data-tarifa="feriado">
-                        <span class="tarifa-icon">📅</span>
-                        <span class="tarifa-nombre">Feriado</span>
-                        <span class="tarifa-desc">+50% días feriados</span>
-                    </button>
-                    <button type="button" class="tarifa-btn tarifa-vip" data-tarifa="vip">
-                        <span class="tarifa-icon">⭐</span>
-                        <span class="tarifa-nombre">VIP</span>
-                        <span class="tarifa-desc">Vehículo premium</span>
-                    </button>
+            <section class="form-card">
+
+                <div id="mapa"></div>
+
+                <div class="waypoints">
+                    <div class="waypoint">
+                        <span class="wp-dot wp-verde">●</span>
+                        <span id="labelOrigen" class="wp-texto wp-vacio">Clic en el mapa para marcar el origen</span>
+                        <button type="button" id="btnUbicacion" class="btn-ubicacion">📍 Mi ubicación</button>
+                    </div>
+                    <div class="waypoint">
+                        <span class="wp-dot wp-rojo">●</span>
+                        <span id="labelDestino" class="wp-texto wp-vacio">Destino no seleccionado</span>
+                    </div>
                 </div>
-            </div>
 
-            <button type="button" id="btnCotizar">Cotizar viaje</button>
+                <button type="button" id="btnCalcular" hidden>Calcular ruta</button>
 
-        </section>
+                <div class="field">
+                    <label>Tipo de tarifa</label>
+                    <div class="tarifa-grid" id="tarifaGrid">
+                        <button type="button" class="tarifa-btn active" data-tarifa="normal">
+                            <span class="tarifa-icon">🚗</span>
+                            <span class="tarifa-nombre">Normal</span>
+                            <span class="tarifa-desc">Tarifa estándar</span>
+                        </button>
+                        <button type="button" class="tarifa-btn" data-tarifa="nocturna">
+                            <span class="tarifa-icon">🌙</span>
+                            <span class="tarifa-nombre">Nocturna</span>
+                            <span class="tarifa-desc">+30% después de las 22hs</span>
+                        </button>
+                        <button type="button" class="tarifa-btn" data-tarifa="lluvia">
+                            <span class="tarifa-icon">🌧️</span>
+                            <span class="tarifa-nombre">Lluvia</span>
+                            <span class="tarifa-desc">+20% en mal clima</span>
+                        </button>
+                        <button type="button" class="tarifa-btn" data-tarifa="feriado">
+                            <span class="tarifa-icon">📅</span>
+                            <span class="tarifa-nombre">Feriado</span>
+                            <span class="tarifa-desc">+50% días feriados</span>
+                        </button>
+                        <button type="button" class="tarifa-btn tarifa-vip" data-tarifa="vip">
+                            <span class="tarifa-icon">⭐</span>
+                            <span class="tarifa-nombre">VIP</span>
+                            <span class="tarifa-desc">Vehículo premium</span>
+                        </button>
+                    </div>
+                </div>
 
-        <section class="recibo" id="recibo" hidden>
-            <div class="recibo-header">
-                <span id="reciboRuta"></span>
-                <span class="badge" id="reciboBadge"></span>
-            </div>
-            <div class="recibo-detalle">
-                <div class="linea">
-                    <span>Distancia</span>
-                    <span id="reciboKm"></span>
-                </div>
-                <div class="linea">
-                    <span>Precio base</span>
-                    <span id="reciboPrecioBase"></span>
-                </div>
-                <div class="linea recargo-linea" id="lineaRecargo" hidden>
-                    <span id="reciboRecargoNota">Recargo</span>
-                    <span id="reciboRecargo"></span>
-                </div>
-                <div class="linea total">
-                    <span>Total</span>
-                    <span id="reciboTotal"></span>
-                </div>
-            </div>
-        </section>
+                <button type="button" id="btnCotizar">Cotizar viaje</button>
 
-        <section class="historial">
-            <h2>Últimas cotizaciones</h2>
-            <div class="tabla-wrap">
-                <table id="tablaHistorial">
-                    <thead>
-                        <tr>
-                            <th>Ruta</th>
-                            <th>Tarifa</th>
-                            <th>Km</th>
-                            <th>Base</th>
-                            <th>Recargo</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historialBody">
-                        <tr><td colspan="6" class="vacio">Sin cotizaciones aún</td></tr>
-                    </tbody>
-                </table>
+            </section>
+
+            <section class="recibo" id="recibo" hidden>
+                <div class="recibo-header">
+                    <span id="reciboRuta"></span>
+                    <span class="badge" id="reciboBadge"></span>
+                </div>
+                <div class="recibo-detalle">
+                    <div class="linea">
+                        <span>Distancia</span>
+                        <span id="reciboKm"></span>
+                    </div>
+                    <div class="linea">
+                        <span>Precio base</span>
+                        <span id="reciboPrecioBase"></span>
+                    </div>
+                    <div class="linea recargo-linea" id="lineaRecargo" hidden>
+                        <span id="reciboRecargoNota">Recargo</span>
+                        <span id="reciboRecargo"></span>
+                    </div>
+                    <div class="linea total">
+                        <span>Total</span>
+                        <span id="reciboTotal"></span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ── Columna derecha: historial ── -->
+        <aside class="panel-historial">
+            <h2>Cotizaciones</h2>
+            <div id="historialLista" class="historial-lista">
+                <p class="vacio">Sin cotizaciones aún</p>
             </div>
-        </section>
+        </aside>
+
     </main>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
