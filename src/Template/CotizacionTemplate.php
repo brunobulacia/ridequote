@@ -1,6 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../DB.php';
+require_once __DIR__ . '/../Model/RutaModel.php';
+require_once __DIR__ . '/../Model/TarifaModel.php';
+require_once __DIR__ . '/../Model/CotizacionModel.php';
+require_once __DIR__ . '/../Model/ConductorModel.php';
 require_once __DIR__ . '/../Strategy/TarifaStrategy.php';
 
 abstract class CotizacionTemplate
@@ -8,11 +11,24 @@ abstract class CotizacionTemplate
     private TarifaStrategy $strategy;
     private bool $preview = false;
 
+    protected RutaModel $rutaModel;
+    protected TarifaModel $tarifaModel;
+    protected CotizacionModel $cotizacionModel;
+    protected ConductorModel $conductorModel;
+
     protected array $viaje = [];
     protected array $tarifa = [];
     protected float $precioBase = 0.0;
     protected float $recargo = 0.0;
     protected float $precioFinal = 0.0;
+
+    public function __construct()
+    {
+        $this->rutaModel       = new RutaModel();
+        $this->tarifaModel     = new TarifaModel();
+        $this->cotizacionModel = new CotizacionModel();
+        $this->conductorModel  = new ConductorModel();
+    }
 
     public function setStrategy(TarifaStrategy $strategy): void
     {
@@ -41,23 +57,17 @@ abstract class CotizacionTemplate
 
     protected function obtenerViaje(int $rutaId): void
     {
-        $stmt = DB::getInstance()->prepare('SELECT * FROM rutas WHERE id = ?');
-        $stmt->execute([$rutaId]);
-        $this->viaje = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->viaje = $this->rutaModel->getById($rutaId);
     }
 
     protected function obtenerTarifa(int $tarifaId): void
     {
-        $stmt = DB::getInstance()->prepare('SELECT * FROM tarifas WHERE id = ?');
-        $stmt->execute([$tarifaId]);
-        $this->tarifa = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->tarifa = $this->tarifaModel->getById($tarifaId);
     }
 
     protected function validarDisponibilidad(): void
     {
-        $stmt = DB::getInstance()->prepare('SELECT COUNT(*) FROM conductores WHERE disponible = 1');
-        $stmt->execute();
-        if ($stmt->fetchColumn() === 0) {
+        if (!$this->conductorModel->hayDisponibles()) {
             throw new Exception('No hay conductores disponibles');
         }
     }
@@ -69,19 +79,14 @@ abstract class CotizacionTemplate
 
     protected function guardarEnHistorial(): void
     {
-        $stmt = DB::getInstance()->prepare(
-            'INSERT INTO cotizaciones
-                (ruta_id, tarifa_id, km, precio_base, recargo, precio_final)
-             VALUES (?, ?, ?, ?, ?, ?)'
-        );
-        $stmt->execute([
+        $this->cotizacionModel->create(
             $this->viaje['id'],
             $this->tarifa['id'],
             $this->viaje['km'],
             $this->precioBase,
             $this->recargo,
             $this->precioFinal,
-        ]);
+        );
     }
 
     protected function notaRecargo(): string

@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once __DIR__ . '/../src/DB.php';
+require_once __DIR__ . '/../src/Model/RutaModel.php';
 require_once __DIR__ . '/../src/DistanciaService.php';
 require_once __DIR__ . '/../src/Classifier.php';
 
@@ -17,11 +17,13 @@ class RutaPersonalizadaController
 {
     private DistanciaService $distanciaService;
     private Classifier $classifier;
+    private RutaModel $rutaModel;
 
     public function __construct()
     {
         $this->distanciaService = new DistanciaService();
         $this->classifier       = new Classifier();
+        $this->rutaModel        = new RutaModel();
     }
 
     public function handle(): void
@@ -49,12 +51,7 @@ class RutaPersonalizadaController
 
         $nombre = "{$nombreOrigen} → {$nombreDestino}";
 
-        $db   = DB::getInstance();
-        $stmt = $db->prepare(
-            'INSERT INTO rutas (nombre, origen, destino, km, tipo) VALUES (?, ?, ?, ?, ?)'
-        );
-        $stmt->execute([$nombre, $nombreOrigen, $nombreDestino, $km, $tipo]);
-        $rutaId = (int) $db->lastInsertId();
+        $rutaId = $this->rutaModel->create($nombre, $nombreOrigen, $nombreDestino, $km, $tipo);
 
         echo json_encode([
             'ruta_id' => $rutaId,

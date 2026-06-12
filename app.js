@@ -164,7 +164,7 @@ class Vista {
 
     const [o, d] = this.#marcadores;
 
-    const res = await fetch(`${this.#API}/api/ruta_personalizada.php`, {
+    const res = await fetch(`${this.#API}/api/RutaPersonalizadaController.php`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -220,7 +220,7 @@ class Vista {
   }
 
   async #cargarHistorial() {
-    const res = await fetch(`${this.#API}/api/historial.php`);
+    const res = await fetch(`${this.#API}/api/HistorialController.php`);
     const data = await res.json();
     this.#renderHistorial(data);
   }
@@ -233,7 +233,7 @@ class Vista {
     const nonce = ++this.#cotizarNonce;
 
     try {
-      const res = await fetch(`${this.#API}/api/cotizar.php`, {
+      const res = await fetch(`${this.#API}/api/CotizadorController.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

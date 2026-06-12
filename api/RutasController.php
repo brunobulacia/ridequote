@@ -9,16 +9,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once __DIR__ . '/../src/DB.php';
+require_once __DIR__ . '/../src/Model/RutaModel.php';
 
 class RutasController
 {
+    private RutaModel $rutaModel;
+
+    public function __construct()
+    {
+        $this->rutaModel = new RutaModel();
+    }
+
     public function handle(): void
     {
         header('Content-Type: application/json');
 
-        $stmt = DB::getInstance()->query('SELECT * FROM rutas ORDER BY id');
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        echo json_encode($this->rutaModel->get());
     }
 }
 

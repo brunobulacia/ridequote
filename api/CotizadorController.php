@@ -9,7 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once __DIR__ . '/../src/DB.php';
+require_once __DIR__ . '/../src/Model/RutaModel.php';
+require_once __DIR__ . '/../src/Model/TarifaModel.php';
 require_once __DIR__ . '/../src/Strategy/TarifaStrategy.php';
 require_once __DIR__ . '/../src/Strategy/TarifaNormal.php';
 require_once __DIR__ . '/../src/Strategy/TarifaNocturna.php';
@@ -23,6 +24,8 @@ require_once __DIR__ . '/../src/Template/CotizacionAeropuerto.php';
 class CotizadorController
 {
     private array $strategies = [];
+    private RutaModel $rutaModel;
+    private TarifaModel $tarifaModel;
 
     public function __construct()
     {
@@ -33,6 +36,8 @@ class CotizadorController
             'feriado'  => new TarifaFeriado(),
             'vip'      => new TarifaVIP(),
         ];
+        $this->rutaModel   = new RutaModel();
+        $this->tarifaModel = new TarifaModel();
     }
 
     public function handle(): void
@@ -44,11 +49,7 @@ class CotizadorController
         $tarifaNombre = (string)($input['tarifa']  ?? '');
         $preview      = (bool)  ($input['preview'] ?? false);
 
-        $db = DB::getInstance();
-
-        $stmt = $db->prepare('SELECT * FROM tarifas WHERE nombre = ?');
-        $stmt->execute([$tarifaNombre]);
-        $tarifaData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $tarifaData = $this->tarifaModel->obtenerPorNombre($tarifaNombre);
 
         if (!$tarifaData) {
             http_response_code(400);
@@ -56,9 +57,7 @@ class CotizadorController
             return;
         }
 
-        $stmt = $db->prepare('SELECT tipo FROM rutas WHERE id = ?');
-        $stmt->execute([$rutaId]);
-        $rutaData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $rutaData = $this->rutaModel->getById($rutaId);
 
         if (!$rutaData) {
             http_response_code(400);
